@@ -5,10 +5,10 @@
         "android": "2.2081"
     },
     "id": "vuthinh.level-shaders-fix-port",
-    "name": "Level Shaders Fix (Pixelation Port)",
-    "version": "v0.1.0-alpha.3",
+    "name": "Level Shaders Fix (Render Scale)",
+    "version": "v0.1.0-alpha.4",
     "developer": "Vu Thinh",
-    "description": "Experimental GD 2.2081 pixelation grid correction using the native framebuffer.",
+    "description": "Experimental scene render scaling and pixelation correction for GD 2.2081.",
     "tags": [
         "offline",
         "bugfix"
@@ -17,6 +17,35 @@
         "cgytrus.level-shaders-fix": {
             "version": "*",
             "breaking": true
+        }
+    },
+    "settings": {
+        "render-percent": {
+            "type": "int",
+            "name": "Scene render scale (%)",
+            "description": "100 = native quality. Lower values soften the scene and may reduce GPU scene-rendering work when level shaders are active. Pixelation triggers take priority. Restart GD after changing.",
+            "default": 100,
+            "min": 50,
+            "max": 100,
+            "requires-restart": true,
+            "control": {
+                "arrow-step": 5,
+                "slider-step": 5
+            }
+        },
+        "smooth-upscale": {
+            "type": "bool",
+            "name": "Smooth upscale",
+            "description": "Use texture filtering for the lower-resolution scene. Only affects render scales below 100%. Restart GD after changing.",
+            "default": true,
+            "requires-restart": true
+        },
+        "fix-pixelation": {
+            "type": "bool",
+            "name": "Correct pixelation grid",
+            "description": "Fit whole pixelation cells and align the snap grid. Level pixelation takes priority over scene render scaling. Restart GD after changing.",
+            "default": true,
+            "requires-restart": true
         }
     }
 }

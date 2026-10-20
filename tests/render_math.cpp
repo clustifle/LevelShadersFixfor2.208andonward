@@ -4,6 +4,18 @@
 static void check(bool ok) { if (!ok) throw std::runtime_error("Pixel grid check failed"); }
 static bool near(float a,float b) { return std::abs(a-b)<0.0001f; }
 int main() {
+    check(lsf::renderRatio(100)==1.f);
+    check(lsf::renderRatio(75)==.75f);
+    check(lsf::renderRatio(50)==.5f);
+    for(auto value : {int64_t(-1),int64_t(0),int64_t(49),int64_t(101),INT64_MAX})
+        check(lsf::renderRatio(value)==1.f);
+    for(float ratio : {.5f,.75f,1.f}) {
+        check(!lsf::performanceAllowed(ratio,true)); // trigger priority
+        check(lsf::performanceAllowed(ratio,false)==(ratio<1.f));
+        check(near(ratio * (1.f/ratio),1.f)); // full-size composite
+    }
+    check(!lsf::performanceAllowed(std::numeric_limits<float>::quiet_NaN(),false));
+
     // 1920 physical pixels at 2x scale: 960 logical units / 7 -> 137 cells.
     auto a=lsf::pixelAxis(1920.f,2.f,7.f,1.f);
     check(a && near(1920.f/a->scale,137.f));

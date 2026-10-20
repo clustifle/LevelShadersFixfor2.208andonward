@@ -20,3 +20,19 @@ log messages. The activation log appears once per ShaderLayer, not every frame.
 Build matrix: Windows x64, Android32, Android64. All runtime cases remain pending.
 GD 2.209 and 2.2091 are unsupported.
 Report level ID/local reproduction, trigger values, screenshot and latest Geode log.
+
+## Alpha.4 scene render scale comparison
+Run identical shader-active levels at 100%, 75% and 50%; restart after each setting
+change. Keep FPS cap, VSync, display refresh, graphics quality and other mods fixed.
+Warm up, then repeat the same 60-second section three times for each setting.
+Record average FPS and 1% lows using the same external measurement tool, plus
+GPU utilization/frame time if available. A fixed frame cap can hide headroom.
+Compare image quality and frame times, not just an FPS counter screenshot.
+No benchmark has been run by the port author/session.
+
+Check full-screen coverage, edges, blur, split screen, chromatic offsets and camera
+rotation/zoom at every scale. Test smooth upscale on/off. Trigger pixelation on,
+animate it and disable it: authored pixelation must take priority, then scene scale
+must resume. Test shaders turning off, death/restart and Android context recreation.
+At 100% with correction disabled, rendering should match native behavior.
+Rendering work reduction is experimental; full-frame shader costs/VRAM remain.

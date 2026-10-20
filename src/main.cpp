@@ -6,11 +6,16 @@ using namespace geode::prelude;
 #error "Pixelation port reviewed for GD 2.2081 only."
 #endif
 
+namespace {
+float s_renderRatio = 1.f;
+bool s_smoothUpscale = true;
+bool s_fixPixelation = true;
+}
 class $modify(LSFPixelation, ShaderLayer) {
-    struct Fields { bool reported = false; };
+    struct Fields { bool reported = false; bool performanceReported = false; };
     struct Grid { lsf::PixelAxis x; lsf::PixelAxis y; };
     std::optional<Grid> correctedGrid() {
-        if (!m_state.m_pixelatePixelating || !m_renderTexture || !m_sprite ||
+        if (!s_fixPixelation || !m_state.m_pixelatePixelating || !m_renderTexture || !m_sprite ||
             !lsf::positive(m_scaleFactor)) return std::nullopt;
         auto* sprite = m_renderTexture->getSprite();
         if (!sprite || !sprite->getTexture()) return std::nullopt;
@@ -28,6 +33,24 @@ class $modify(LSFPixelation, ShaderLayer) {
     void prePixelateShader() {
         // Preserve native activation, animation tags, AA and disabled-state reset.
         ShaderLayer::prePixelateShader();
+        // Use native internal-scale downsampling; do not allocate or resize an FBO.
+        // Pixelate triggers (including their animations) always take precedence.
+        if (lsf::performanceAllowed(s_renderRatio, m_state.m_pixelatePixelating) &&
+            m_renderTexture && m_sprite) {
+            m_state.m_textureScaleX = s_renderRatio;
+            m_state.m_textureScaleY = s_renderRatio;
+            m_renderTexture->updateInternalScale(s_renderRatio, s_renderRatio);
+            float upscale = 1.f / s_renderRatio;
+            m_sprite->setScaleX(upscale);
+            m_sprite->setScaleY(upscale);
+            if (s_smoothUpscale) this->toggleAntiAlias(true);
+            if (!m_fields->performanceReported) {
+                log::info("LSF alpha.4: scene render scale {}%; native FBO dimensions unchanged.",
+                    s_renderRatio * 100.f);
+                m_fields->performanceReported = true;
+            }
+            return;
+        }
         auto grid = correctedGrid();
         if (!grid) return;
         m_state.m_textureScaleX = 1.f / grid->x.scale;
@@ -36,7 +59,7 @@ class $modify(LSFPixelation, ShaderLayer) {
         m_sprite->setScaleX(grid->x.scale);
         m_sprite->setScaleY(grid->y.scale);
         if (!m_fields->reported) {
-            log::info("LSF alpha.3: pixel grid correction active; native framebuffer retained.");
+            log::info("LSF alpha.4: pixel grid correction active; native framebuffer retained.");
             m_fields->reported = true;
         }
     }
@@ -51,5 +74,11 @@ class $modify(LSFPixelation, ShaderLayer) {
     }
 };
 $execute {
-    log::info("LSF alpha.3: GD 2.2081 pixelation port; native shader and framebuffer setup retained.");
+    auto* mod = Mod::get();
+    s_renderRatio = lsf::renderRatio(mod->getSettingValue<int64_t>("render-percent"));
+    s_smoothUpscale = mod->getSettingValue<bool>("smooth-upscale");
+    s_fixPixelation = mod->getSettingValue<bool>("fix-pixelation");
+    log::info("LSF alpha.4 settings: render scale {}%, smooth upscale {}, pixelation fix {}. Restart after changes.",
+        s_renderRatio * 100.f, s_smoothUpscale, s_fixPixelation);
+    log::info("LSF alpha.4: GD 2.2081 pixelation port; native shader and framebuffer setup retained.");
 }

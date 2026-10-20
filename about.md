@@ -1,6 +1,7 @@
-# Experimental pixelation port (alpha.3)
-Targets GD 2.2081 / Geode 5.11.2. Corrects pixelation cell sizing and snap-grid
-alignment while retaining native shaders and framebuffer setup.
-Partial port: camera-rotation fixes and performance optimization are not implemented.
-Gameplay and Android lifecycle validation are pending. Disable the mod to restore
-native pixelation. Do not use alpha.1.
+# Render scale / pixelation port — alpha.4
+GD 2.2081 / Geode 5.11.2. Windows x64 and Android.
+Optional scene render scale: 100% native (default), 75% or 50% for less GPU scene
+fill work with softer visuals. Set in Geode settings and restart GD.
+Pixelation triggers take priority. Whole-cell pixelation correction is included.
+Framebuffer memory and full-output shader cost remain; FPS gain is not guaranteed.
+Gameplay, Android lifecycle and performance measurements remain pending.

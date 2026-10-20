@@ -2,8 +2,16 @@
 #include <algorithm>
 #include <cmath>
 #include <optional>
+#include <cstdint>
 namespace lsf {
 inline bool positive(float v) { return std::isfinite(v) && v > 0.f; }
+// Corrupt/out-of-range settings restore native quality rather than over-downsampling.
+inline float renderRatio(int64_t percent) {
+    return percent >= 50 && percent <= 100 ? static_cast<float>(percent) / 100.f : 1.f;
+}
+inline bool performanceAllowed(float ratio, bool pixelating) {
+    return !pixelating && std::isfinite(ratio) && ratio >= .5f && ratio < 1.f;
+}
 struct PixelAxis { float scale; float nativeRequest; };
 // Fit an integer number of cells into the existing physical render target.
 // Native prepareTargetContainer multiplies its request by zoom * scaleFactor.
