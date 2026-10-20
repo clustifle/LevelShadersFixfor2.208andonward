@@ -3,6 +3,7 @@
 #include <Geode/modify/ShaderLayer.hpp>
 #include "RenderMath.hpp"
 #include "Diagnostics.hpp"
+#include "RuntimeSettings.hpp"
 using namespace geode::prelude;
 #if GEODE_COMP_GD_VERSION != 22081
 #error "Pixelation port reviewed for GD 2.2081 only."
@@ -43,7 +44,7 @@ class $modify(LSFPixelation, ShaderLayer) {
         ShaderLayer::prePixelateShader();
         // Use native internal-scale downsampling; do not allocate or resize an FBO.
         // Pixelate triggers (including their animations) always take precedence.
-        if (lsf::performanceAllowed(s_renderRatio, m_state.m_pixelatePixelating) &&
+        if (lsf::performanceAllowed(lsf::nativeResolution ? 1.f : s_renderRatio, m_state.m_pixelatePixelating) &&
             m_renderTexture && m_sprite) {
             m_state.m_textureScaleX = s_renderRatio;
             m_state.m_textureScaleY = s_renderRatio;
@@ -53,7 +54,7 @@ class $modify(LSFPixelation, ShaderLayer) {
             m_sprite->setScaleY(upscale);
             if (s_smoothUpscale) this->toggleAntiAlias(true);
             if (!m_fields->performanceReported) {
-                log::info("LSF alpha.6: scene render scale {}%; native FBO dimensions unchanged.",
+                log::info("LSF alpha.7: scene render scale {}%; native FBO dimensions unchanged.",
                     s_renderRatio * 100.f);
                 m_fields->performanceReported = true;
             }
@@ -67,7 +68,7 @@ class $modify(LSFPixelation, ShaderLayer) {
         m_sprite->setScaleX(grid->x.scale);
         m_sprite->setScaleY(grid->y.scale);
         if (!m_fields->reported) {
-            log::info("LSF alpha.6: pixel grid correction active; native framebuffer retained.");
+            log::info("LSF alpha.7: pixel grid correction active; native framebuffer retained.");
             m_fields->reported = true;
         }
     }
@@ -83,6 +84,16 @@ class $modify(LSFPixelation, ShaderLayer) {
 };
 $execute {
     auto* mod = Mod::get();
+    lsf::nativeResolution = mod->getSettingValue<bool>("native-resolution");
+    lsf::target60 = mod->getSettingValue<bool>("target-60");
+    listenForSettingChanges<bool>("native-resolution", [](bool value) {
+        lsf::nativeResolution = value;
+    });
+    listenForSettingChanges<bool>("target-60", [](bool value) {
+        lsf::target60 = value;
+        lsf::applyFrameTarget();
+        if (!value) GameManager::get()->updateCustomFPS();
+    });
     lsf::diagnostics::enabled = mod->getSettingValue<bool>("cpu-diagnostics");
     lsf::diagnostics::reset();
     listenForSettingChanges<bool>("cpu-diagnostics", [](bool value) {
@@ -102,7 +113,8 @@ $execute {
     listenForSettingChanges<bool>("fix-pixelation", [](bool value) {
         s_fixPixelation = value;
     });
-    log::info("LSF alpha.6 settings: render scale {}%, smooth upscale {}, pixelation fix {}. Changes apply on the next shader update.",
+    log::info("LSF alpha.7: native scene lock {}, target 60 FPS {}", lsf::nativeResolution, lsf::target60);
+    log::info("LSF alpha.7 settings: render scale {}%, smooth upscale {}, pixelation fix {}. Changes apply on the next shader update.",
         s_renderRatio * 100.f, s_smoothUpscale, s_fixPixelation);
-    log::info("LSF alpha.6: GD 2.2081 pixelation port; native shader and framebuffer setup retained.");
+    log::info("LSF alpha.7: GD 2.2081 pixelation port; native shader and framebuffer setup retained.");
 }

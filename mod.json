@@ -6,7 +6,7 @@
     },
     "id": "vuthinh.level-shaders-fix-port",
     "name": "Level Shaders Fix (Render Scale)",
-    "version": "v0.1.0-alpha.6",
+    "version": "v0.1.0-alpha.7",
     "developer": "Vu Thinh",
     "description": "Experimental scene render scaling and pixelation correction for GD 2.2081.",
     "tags": [
@@ -20,6 +20,18 @@
         }
     },
     "settings": {
+        "native-resolution": {
+            "type": "bool",
+            "name": "Lock native scene resolution",
+            "description": "Use GD's current native framebuffer scale. Overrides the scene render percentage; window resizing remains managed by GD. Authored pixelation effects remain. Applies live.",
+            "default": true
+        },
+        "target-60": {
+            "type": "bool",
+            "name": "Target 60 FPS",
+            "description": "Request a 60 FPS render interval at startup and through native FPS updates. Cannot guarantee steady FPS on demanding levels; VSync, display timing and other mods may affect pacing. Applies live.",
+            "default": true
+        },
         "render-percent": {
             "type": "int",
             "name": "Scene render scale (%)",
@@ -30,13 +42,15 @@
             "control": {
                 "arrow-step": 5,
                 "slider-step": 5
-            }
+            },
+            "enable-if": "!native-resolution"
         },
         "smooth-upscale": {
             "type": "bool",
             "name": "Smooth upscale",
             "description": "Use texture filtering for the lower-resolution scene. Only affects render scales below 100%. Applies after saving, on the next shader update.",
-            "default": true
+            "default": true,
+            "enable-if": "!native-resolution"
         },
         "fix-pixelation": {
             "type": "bool",

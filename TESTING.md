@@ -48,3 +48,12 @@ and collect the 'LSF CPU timings' lines and actual FPS separately.
 Disable diagnostics for final performance comparisons. CPU timings exclude GPU
 execution and are inclusive, so categories cannot be summed into a frame total.
 Compare trigger timing, collisions and object visibility with diagnostics off/on.
+
+## Native lock and 60 FPS target
+Default native lock: set a previous percentage below 100, then enable the lock and
+confirm full native sharpness. Resize/fullscreen changes must retain full coverage
+without repeated allocation logs. Disable lock to resume the saved percentage.
+Toggle target 60 on/off with custom FPS disabled/enabled and a prior 144 FPS target.
+Check menu, gameplay, pause/resume, minimize/restore and Android foreground/background.
+Compare physics/trigger timing. Verify target-off restores native frame settings.
+Measure actual FPS and frame times; do not treat a requested interval as smoothness.
