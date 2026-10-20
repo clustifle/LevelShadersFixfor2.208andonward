@@ -14,11 +14,7 @@
         "info": "Report any issues you have on GitHub issues.",
         "url": "https://github.com/cgytrus/LevelShadersFix/issues"
     },
-    "tags": [
-        "offline",
-        "bugfix",
-        "performance"
-    ],
+    "tags": [ "offline", "bugfix", "performance" ],
     "resources": {
         "files": [
             "resources/shaders/*.glsl"
