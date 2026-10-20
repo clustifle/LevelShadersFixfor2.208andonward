@@ -20,11 +20,15 @@
     ]
   },
   "verification": {
-    "source_audit": "alpha.6 pending",
-    "cpp_compilation": "alpha.6 pending",
+    "source_audit": "passed",
+    "cpp_compilation": "alpha.6 passed Windows x64, Android32, Android64",
     "runtime_windows": "alpha.6 pending",
     "runtime_android32": "pending",
     "runtime_android64": "pending",
-    "performance": "No high-object benchmark or FPS measurement yet"
+    "performance": "No high-object benchmark or FPS measurement yet",
+    "cpp_math_tests": "passed",
+    "package_audit": "passed: version/target, architecture, live settings flags, diagnostic log string, archive CRC",
+    "workflow_run": "https://github.com/clustifle/LevelShadersFixfor2.208andonward/actions/runs/39377682986",
+    "source_commit": "2899807cb8e2fccead68657df0049637a7a295f8"
   }
 }
