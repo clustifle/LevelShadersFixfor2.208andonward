@@ -20,11 +20,14 @@
     ]
   },
   "verification": {
-    "source_audit": "alpha.3 structural guard pending",
-    "cpp_compilation": "alpha.3 pending",
-    "cpp_math_tests": "alpha.3 grid invariant tests pending",
+    "source_audit": "passed",
+    "cpp_compilation": "passed: Windows x64, Android32, Android64",
+    "cpp_math_tests": "passed: grid rounding, zoom, independent axes, invalid inputs, temporary state restoration",
     "runtime_windows": "alpha.3 pending; alpha.1 failed",
     "runtime_android32": "pending",
-    "runtime_android64": "pending"
+    "runtime_android64": "pending",
+    "package_audit": "passed: alpha.3 manifest, GD/Geode target, native architecture, ZIP CRCs, activation string, no packaged custom shaders",
+    "workflow_run": "https://github.com/clustifle/LevelShadersFixfor2.208andonward/actions/runs/39375723574",
+    "source_commit": "4a65720130d3ed50d7efecef3f59d4aa2406803a"
   }
 }
