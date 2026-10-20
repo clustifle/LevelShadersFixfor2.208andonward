@@ -21,8 +21,8 @@ Build matrix: Windows x64, Android32, Android64. All runtime cases remain pendin
 GD 2.209 and 2.2091 are unsupported.
 Report level ID/local reproduction, trigger values, screenshot and latest Geode log.
 
-## Alpha.4 scene render scale comparison
-Run identical shader-active levels at 100%, 75% and 50%; restart after each setting
+## Alpha.5 scene render scale comparison
+Run identical shader-active levels at 100%, 75% and 50%; save/apply each setting
 change. Keep FPS cap, VSync, display refresh, graphics quality and other mods fixed.
 Warm up, then repeat the same 60-second section three times for each setting.
 Record average FPS and 1% lows using the same external measurement tool, plus
@@ -36,3 +36,8 @@ animate it and disable it: authored pixelation must take priority, then scene sc
 must resume. Test shaders turning off, death/restart and Android context recreation.
 At 100% with correction disabled, rendering should match native behavior.
 Rendering work reduction is experimental; full-frame shader costs/VRAM remain.
+
+Live settings: during a shader-active level, change 100 -> 75 -> 50 -> 100,
+save/apply and resume. Confirm full-screen coverage and native sharpness at 100%.
+Toggle filtering and pixelation correction too. No reload or level restart needed.
+Paused rendering may retain the previous image until the next game update.

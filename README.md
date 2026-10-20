@@ -1,13 +1,13 @@
-# Level Shaders Fix — render scale alpha.4
+# Level Shaders Fix — render scale alpha.5
 Experimental GD 2.2081 / Geode 5.11.2 port for Windows x64, Android32 and Android64.
 Includes pixelation grid correction and configurable scene render scaling.
 Runtime visual/performance validation is pending; no measured FPS gain is claimed.
 
 ## Performance settings
 Open this mod's Geode settings. Scene render scale defaults to 100% (native quality).
-Select 75% for a first comparison, apply and restart GD. Use 50% only if the
+Select 75% for a first comparison, save/apply the settings; the next shader update uses the new scale. Use 50% only if the
 quality tradeoff suits you. Smooth upscale enables filtering below native scale.
-Restore 100% and restart to turn off performance scaling.
+Restore 100% and save/apply to turn off performance scaling.
 The separate pixelation correction can also be disabled.
 
 Scaling uses the game's internal render-scale and matching sprite-composite path,
@@ -30,7 +30,7 @@ Invalid dimensions/zoom fall back to native behavior.
 
 ## Renderer ownership
 Native framebuffer allocation, screen/target sizes, shader program, camera
-transforms and context recreation remain. Settings are cached once at load;
+transforms and context recreation remain. Settings are cached at load and updated by Geode setting-change events;
 the frame path performs no settings lookup, GL query or framebuffer allocation.
 Logs occur at load and once per layer for feature activation.
 

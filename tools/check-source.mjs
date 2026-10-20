@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const source=fs.readFileSync(path.join(root,'src/main.cpp'),'utf8');
 const m=JSON.parse(fs.readFileSync(path.join(root,'mod.json'),'utf8'));
-assert.equal(m.version,'v0.1.0-alpha.4');
+assert.equal(m.version,'v0.1.0-alpha.5');
 assert.equal(m.geode,'5.11.2');
 assert.deepEqual(m.gd,{win:'2.2081',android:'2.2081'});
 assert(!m.resources);
@@ -19,4 +19,4 @@ assert(source.includes('ShaderLayer::prepareTargetContainer()'));
 console.log('PASS: 2.2081 pixelation port; no target replacement, GLSL override or FPS controls');
 
 assert.equal(m.settings["render-percent"].default,100);
-assert.equal(m.settings["render-percent"]["requires-restart"],true);
+for (const s of Object.values(m.settings)) assert(!s["requires-restart"]);

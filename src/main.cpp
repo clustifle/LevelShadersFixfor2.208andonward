@@ -1,4 +1,5 @@
 #include <Geode/Geode.hpp>
+#include <Geode/loader/SettingV3.hpp>
 #include <Geode/modify/ShaderLayer.hpp>
 #include "RenderMath.hpp"
 using namespace geode::prelude;
@@ -45,7 +46,7 @@ class $modify(LSFPixelation, ShaderLayer) {
             m_sprite->setScaleY(upscale);
             if (s_smoothUpscale) this->toggleAntiAlias(true);
             if (!m_fields->performanceReported) {
-                log::info("LSF alpha.4: scene render scale {}%; native FBO dimensions unchanged.",
+                log::info("LSF alpha.5: scene render scale {}%; native FBO dimensions unchanged.",
                     s_renderRatio * 100.f);
                 m_fields->performanceReported = true;
             }
@@ -59,7 +60,7 @@ class $modify(LSFPixelation, ShaderLayer) {
         m_sprite->setScaleX(grid->x.scale);
         m_sprite->setScaleY(grid->y.scale);
         if (!m_fields->reported) {
-            log::info("LSF alpha.4: pixel grid correction active; native framebuffer retained.");
+            log::info("LSF alpha.5: pixel grid correction active; native framebuffer retained.");
             m_fields->reported = true;
         }
     }
@@ -78,7 +79,17 @@ $execute {
     s_renderRatio = lsf::renderRatio(mod->getSettingValue<int64_t>("render-percent"));
     s_smoothUpscale = mod->getSettingValue<bool>("smooth-upscale");
     s_fixPixelation = mod->getSettingValue<bool>("fix-pixelation");
-    log::info("LSF alpha.4 settings: render scale {}%, smooth upscale {}, pixelation fix {}. Restart after changes.",
+    listenForSettingChanges<int64_t>("render-percent", [](int64_t value) {
+        s_renderRatio = lsf::renderRatio(value);
+        log::info("LSF: scene render scale changed to {}%", s_renderRatio * 100.f);
+    });
+    listenForSettingChanges<bool>("smooth-upscale", [](bool value) {
+        s_smoothUpscale = value;
+    });
+    listenForSettingChanges<bool>("fix-pixelation", [](bool value) {
+        s_fixPixelation = value;
+    });
+    log::info("LSF alpha.5 settings: render scale {}%, smooth upscale {}, pixelation fix {}. Changes apply on the next shader update.",
         s_renderRatio * 100.f, s_smoothUpscale, s_fixPixelation);
-    log::info("LSF alpha.4: GD 2.2081 pixelation port; native shader and framebuffer setup retained.");
+    log::info("LSF alpha.5: GD 2.2081 pixelation port; native shader and framebuffer setup retained.");
 }
