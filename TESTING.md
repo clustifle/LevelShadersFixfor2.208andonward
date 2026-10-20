@@ -1,47 +1,22 @@
-# Acceptance checklist — no tests below have been run in-game
+# Alpha.3 runtime acceptance (pending)
+Compare the same reproducible local level with this mod enabled and disabled.
+Record GD 2.2081, Geode 5.11.2, ABI, resolution, quality, other mods and trigger values.
+Disable the upstream mod. Main-menu loading alone is not validation.
 
-Use backed-up saves and a separate development profile. Record GD version,
-loader version, mod build profile, ABI, GPU/driver, resolution and other mods.
-Keep the original Level Shaders Fix disabled.
+- Pixelate X/Y independently and together; values 1, 2, 7, 11 and above screen size.
+- Animate from 1 to larger values and back; confirm no lingering pixelation.
+- Hard edges on/off; relative zoom on/off; zoom 0.5, 1 and 2.
+- Snap grid on/off while scrolling, rotating and zooming the camera.
+- All other shader families alone/combined; no cropping or black regions.
+- Death, restart, practice checkpoints, editor playtest, pause/resume.
+- Window resize, fullscreen, quality changes, 16:9 and ultrawide.
+- Android background/foreground and GL context recreation.
+- Compare FPS with identical settings. No FPS increase is promised.
 
-## First establish the baseline
+Expected: corrected cells fill each axis without a partial cell at the edge;
+snap motion follows that same cell grid. No per-frame framebuffer configuration
+log messages. The activation log appears once per ShaderLayer, not every frame.
 
-1. Run the same shader-heavy level with vanilla/stock Geode rendering.
-2. Record actual render-target dimensions, GPU frame time and visual output.
-3. Check whether the old oversized-square target issue still exists.
-4. Compare the port with identical graphics settings; do not infer performance
-   from allocation size alone.
-
-## Platform matrix
-
-| Game | Windows x64 | Android arm64-v8a | Android armeabi-v7a |
-| --- | --- | --- | --- |
-| 2.209 | Build/load/visual/performance pending | Pending | Pending |
-| 2.2091 | Build/load/visual/performance pending | Pending | Pending |
-
-All six native builds must compile and link. Confirm the .geode manifest and
-binary architecture match the target. Reaching the main menu is not sufficient.
-
-## Visual and lifecycle cases
-
-- Every shader family alone, then combined triggers and animated transitions.
-- Invert RGB/clamping, split screen, grayscale tint and blur blending layers.
-- Camera rotation 0, 45, 90, 180 and 360 degrees, with zoom and shader targets.
-- Below/above shader layers, particles, editor playtest and platformer camera.
-- Pixelate X/Y alone and together; hard edges, relative zoom, snap grid,
-  values below one and values larger than the logical texture dimension.
-- Level start, death, practice checkpoints, restart, pause, resume and completion.
-- Window resize, fullscreen change, low/medium/high quality and 16:9/ultrawide.
-- Android background/foreground, lock/unlock, GL context loss and orientation.
-- Missing shaders, compile/link failure and GPU allocation failure: initial
-  failures should retain the native renderer; active-target recovery needs review.
-- Other shader/rendering mods: compare hook ordering and shared temporary state.
-- Unknown future GD version: hooks should remain disabled. Do not bypass this
-  guard merely to make the mod appear compatible.
-
-## Report a failure
-
-Include the Geode crash log or compiler output, exact build profile, ABI, level
-ID or reproducible local level, trigger values, screenshot/video and whether the
-same issue occurs without the port. A successful source audit does not replace
-any of these tests.
+Build matrix: Windows x64, Android32, Android64. All runtime cases remain pending.
+GD 2.209 and 2.2091 are unsupported.
+Report level ID/local reproduction, trigger values, screenshot and latest Geode log.

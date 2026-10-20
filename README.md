@@ -1,48 +1,29 @@
-# Level Shaders Fix Port — recovery alpha.2
+# Level Shaders Fix — GD 2.2081 pixelation port
+Alpha.3 implements the upstream pixelation correction on GD 2.2081 / Geode 5.11.2.
+Windows x64, Android32 and Android64 are build targets. Runtime validation is pending.
 
-**The first experimental renderer (alpha.1) failed runtime testing. Do not use it.**
+## Implemented
+Pixelation fits a whole number of cells into the native physical render target.
+Relative zoom and independent X/Y values are accounted for. Native snap-grid
+preparation uses the same corrected cell size, with trigger values restored after
+the call. Native animation activation, anti-aliasing and disabled-state handling
+remain in place. Invalid dimensions/zoom fall back to native behavior.
 
-The user observed a cropped scene and severe FPS loss on GD 2.2081. Investigation
-found an incompatible render-size/scale assumption that repeatedly rebuilt the
-framebuffer. See [RECOVERY.md](RECOVERY.md).
+The game retains ownership of framebuffer allocation, screen sizing, shader
+programs, camera transforms and context recreation. No shader resources are packaged.
+No FPS or VSync controls are changed.
 
-## What alpha.2 does
+## Scope
+This is a partial port of the upstream bug fixes. Camera-rotation/custom-GLSL work
+and any new performance optimization are not implemented. GD 2.2081 already uses
+a rectangular target; the original square-target replacement is inappropriate.
+Do not expect this build to improve FPS. See RECOVERY.md for the alpha.1 failure.
 
-**Alpha.2 is a recovery rollback. It installs no rendering hooks and retains the
-native 2.2081 renderer. It does not implement a new performance fix.**
-Disabling or removing alpha.1 is also sufficient to remove its replacement path.
+## Build and test
+GitHub Actions builds on main, port-recovery and port-22081. Default target is
+2.2081. GD 2.209/2.2091 remain unsupported and are rejected at compilation.
+Download the matching ABI artifact from Actions; close GD and replace the previous
+package under the same mod ID. Disable the original Level Shaders Fix.
+See TESTING.md for required runtime checks. Alpha.2 remains a rollback option.
 
-The original 2.206 mod's square-target assumptions do not match the inspected
-2.2081 pipeline, which already allocates a rectangular target. A future optimizer
-needs a new measured baseline instead of importing that old replacement.
-
-## Get a recovery package
-
-Open [Actions](https://github.com/clustifle/LevelShadersFixfor2.208andonward/actions),
-choose **Experimental port builds**, then select the newest alpha.2 build.
-Packages are built for Windows x64 and Android armeabi-v7a/arm64-v8a with
-**GD 2.2081 / Geode 5.11.2**. A successful compile does not establish runtime FPS.
-
-Close GD, replace the alpha.1 .geode with alpha.2 for your platform, then restart.
-Both versions use the same mod ID; install only one package.
-See RECOVERY.md for the retest checklist.
-
-## Newer versions
-
-2.209 and 2.2091 source profiles remain blocked by missing/newer Cocos interfaces
-in SDK 5.11.2. No compatible package for those versions is claimed.
-
-## Development
-
-The workflow defaults to 2.2081 and builds on pushes to main/port-recovery or manual dispatch.
-No local Visual Studio installation is needed to use GitHub Actions.
-
-Local development still requires the Geode SDK/CLI and a supported native
-toolchain. Run tools/build.ps1 for Windows/Android after setting GEODE_SDK and
-GEODE_BINDINGS_REPO_PATH. The reviewed bindings commit is in PROVENANCE.json.
-
-The source audit checks that the recovery package has no renderer detours,
-custom resources or frame-rate controls. The retained standalone math tests
-cover historical render math only and cannot validate a shader pipeline.
-
-Upstream author and source/licensing records: THIRD_PARTY.md.
+Upstream attribution: THIRD_PARTY.md.

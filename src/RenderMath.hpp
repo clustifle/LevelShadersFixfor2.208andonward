@@ -2,30 +2,27 @@
 #include <algorithm>
 #include <cmath>
 #include <optional>
-
 namespace lsf {
-inline bool positive(float value) { return std::isfinite(value) && value > 0.f; }
-struct Dimensions { int width; int height; };
-inline std::optional<Dimensions> dimensions(float width, float height) {
-    // Bound before converting float to integer.
-    if (!positive(width) || !positive(height) || width > 32768.f || height > 32768.f)
+inline bool positive(float v) { return std::isfinite(v) && v > 0.f; }
+struct PixelAxis { float scale; float nativeRequest; };
+// Fit an integer number of cells into the existing physical render target.
+// Native prepareTargetContainer multiplies its request by zoom * scaleFactor.
+inline std::optional<PixelAxis> pixelAxis(float pixels, float factor, float request, float zoom) {
+    if (!positive(pixels) || !positive(factor) || !positive(request) || !positive(zoom))
         return std::nullopt;
-    return Dimensions{std::max(1, static_cast<int>(std::ceil(width))),
-        std::max(1, static_cast<int>(std::ceil(height)))};
-}
-inline float pixelSize(float targetPixels, float logicalPixels, float requestedPixels) {
-    if (!positive(targetPixels) || !positive(logicalPixels)) return 1.f;
-    if (!positive(requestedPixels)) requestedPixels = 1.f;
-    float cells = std::max(1.f, std::round(logicalPixels / std::max(1.f, requestedPixels)));
-    return targetPixels / cells;
+    float logical = pixels / factor;
+    float cells = std::max(1.f, std::round(logical / std::max(1.f, request)));
+    float scale = std::max(1.f, zoom * (pixels / cells));
+    float nativeRequest = scale / factor / zoom;
+    if (!positive(scale) || !positive(nativeRequest)) return std::nullopt;
+    return PixelAxis{scale, nativeRequest};
 }
 template<class T> class RestoreValue {
-    T& m_target;
-    T m_saved;
+    T& target; T saved;
 public:
-    RestoreValue(T& target, T value) : m_target(target), m_saved(target) { target = value; }
+    RestoreValue(T& t, T v) : target(t), saved(t) { target = v; }
+    ~RestoreValue() { target = saved; }
     RestoreValue(RestoreValue const&) = delete;
     RestoreValue& operator=(RestoreValue const&) = delete;
-    ~RestoreValue() { m_target = m_saved; }
 };
 }

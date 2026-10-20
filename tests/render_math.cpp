@@ -1,32 +1,32 @@
 #include "../src/RenderMath.hpp"
-#include <cstdlib>
 #include <limits>
 #include <stdexcept>
-static void check(bool condition) {
-    if (!condition) throw std::runtime_error("Render math check failed");
-}
+static void check(bool ok) { if (!ok) throw std::runtime_error("Pixel grid check failed"); }
+static bool near(float a,float b) { return std::abs(a-b)<0.0001f; }
 int main() {
-    auto hd = lsf::dimensions(1920.f, 1080.f);
-    check(hd && hd->width == 1920 && hd->height == 1080);
-    auto fractional = lsf::dimensions(1920.25f, 1080.5f);
-    check(fractional && fractional->width == 1921 && fractional->height == 1081);
-    check(!lsf::dimensions(0.f, 1080.f));
-    check(!lsf::dimensions(-1.f, 1080.f));
-    check(!lsf::dimensions(std::numeric_limits<float>::infinity(), 1080.f));
-    check(!lsf::dimensions(std::numeric_limits<float>::quiet_NaN(), 1080.f));
-    check(!lsf::dimensions(1e30f, 1080.f));
-    check(lsf::pixelSize(1920.f, 2608.f, 1e30f) == 1920.f);
-    for (float requested : {0.f, -10.f, 1.f, 10.f, 1e30f,
-         std::numeric_limits<float>::quiet_NaN()}) {
-        auto value = lsf::pixelSize(1920.f, 2608.f, requested);
-        check(lsf::positive(value) && value <= 1920.f);
+    // 1920 physical pixels at 2x scale: 960 logical units / 7 -> 137 cells.
+    auto a=lsf::pixelAxis(1920.f,2.f,7.f,1.f);
+    check(a && near(1920.f/a->scale,137.f));
+    check(near(a->nativeRequest*2.f,a->scale));
+    for(float zoom : {0.5f,1.f,2.f}) {
+        auto x=lsf::pixelAxis(1366.f,2.4f,11.f,zoom);
+        auto y=lsf::pixelAxis(768.f,2.4f,5.f,zoom);
+        check(x && y && x->scale>=1 && y->scale>=1);
+        check(near(x->nativeRequest*2.4f*zoom,x->scale));
+        check(near(y->nativeRequest*2.4f*zoom,y->scale));
     }
-    float value = 2.f;
-    try {
-        lsf::RestoreValue outer(value, 3.f);
-        { lsf::RestoreValue inner(value, 4.f); check(value == 4.f); }
-        check(value == 3.f);
-        throw 1;
-    } catch (int) {}
-    check(value == 2.f);
+    auto huge=lsf::pixelAxis(1920.f,2.f,1e30f,1.f);
+    check(huge && huge->scale==1920.f);
+    auto one=lsf::pixelAxis(1920.f,1.f,1.f,1.f);
+    check(one && one->scale==1.f);
+    for(float invalid : {0.f,-1.f,std::numeric_limits<float>::infinity(),
+                          std::numeric_limits<float>::quiet_NaN()}) {
+        check(!lsf::pixelAxis(invalid,2.f,7.f,1.f));
+        check(!lsf::pixelAxis(1920.f,invalid,7.f,1.f));
+        check(!lsf::pixelAxis(1920.f,2.f,invalid,1.f));
+        check(!lsf::pixelAxis(1920.f,2.f,7.f,invalid));
+    }
+    float v=7.f;
+    {lsf::RestoreValue outer(v,3.f);{lsf::RestoreValue inner(v,2.f);check(v==2.f);}check(v==3.f);}
+    check(v==7.f);
 }

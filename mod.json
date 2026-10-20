@@ -5,14 +5,13 @@
         "android": "2.2081"
     },
     "id": "vuthinh.level-shaders-fix-port",
-    "name": "Level Shaders Fix (Recovery)",
-    "version": "v0.1.0-alpha.2",
+    "name": "Level Shaders Fix (Pixelation Port)",
+    "version": "v0.1.0-alpha.3",
     "developer": "Vu Thinh",
-    "description": "Recovery rollback: retains native shader rendering and removes the faulty alpha.1 renderer.",
+    "description": "Experimental GD 2.2081 pixelation grid correction using the native framebuffer.",
     "tags": [
         "offline",
-        "bugfix",
-        "performance"
+        "bugfix"
     ],
     "incompatibilities": {
         "cgytrus.level-shaders-fix": {

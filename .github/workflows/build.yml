@@ -1,7 +1,7 @@
 name: Experimental port builds
 on:
   push:
-    branches: [main, port-recovery]
+    branches: [main, port-recovery, port-22081]
   workflow_dispatch:
     inputs:
       gd:
