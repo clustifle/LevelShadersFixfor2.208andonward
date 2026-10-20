@@ -1,4 +1,4 @@
-# Render scale / pixelation port — alpha.5
+# Render scale / pixelation port — alpha.6
 GD 2.2081 / Geode 5.11.2. Windows x64 and Android.
 Optional scene render scale: 100% native (default), 75% or 50% for less GPU scene
 fill work with softer visuals. Save/apply in Geode settings; no restart is required.

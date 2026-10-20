@@ -2,6 +2,7 @@
 #include <Geode/loader/SettingV3.hpp>
 #include <Geode/modify/ShaderLayer.hpp>
 #include "RenderMath.hpp"
+#include "Diagnostics.hpp"
 using namespace geode::prelude;
 #if GEODE_COMP_GD_VERSION != 22081
 #error "Pixelation port reviewed for GD 2.2081 only."
@@ -31,6 +32,12 @@ class $modify(LSFPixelation, ShaderLayer) {
         if (!x || !y) return std::nullopt;
         return Grid{*x, *y};
     }
+    void performCalculations() {
+        if (!lsf::diagnostics::enabled) { ShaderLayer::performCalculations(); return; }
+        auto start = lsf::diagnostics::Clock::now();
+        ShaderLayer::performCalculations();
+        lsf::diagnostics::add(lsf::diagnostics::ShaderCPU,start);
+    }
     void prePixelateShader() {
         // Preserve native activation, animation tags, AA and disabled-state reset.
         ShaderLayer::prePixelateShader();
@@ -46,7 +53,7 @@ class $modify(LSFPixelation, ShaderLayer) {
             m_sprite->setScaleY(upscale);
             if (s_smoothUpscale) this->toggleAntiAlias(true);
             if (!m_fields->performanceReported) {
-                log::info("LSF alpha.5: scene render scale {}%; native FBO dimensions unchanged.",
+                log::info("LSF alpha.6: scene render scale {}%; native FBO dimensions unchanged.",
                     s_renderRatio * 100.f);
                 m_fields->performanceReported = true;
             }
@@ -60,7 +67,7 @@ class $modify(LSFPixelation, ShaderLayer) {
         m_sprite->setScaleX(grid->x.scale);
         m_sprite->setScaleY(grid->y.scale);
         if (!m_fields->reported) {
-            log::info("LSF alpha.5: pixel grid correction active; native framebuffer retained.");
+            log::info("LSF alpha.6: pixel grid correction active; native framebuffer retained.");
             m_fields->reported = true;
         }
     }
@@ -76,6 +83,12 @@ class $modify(LSFPixelation, ShaderLayer) {
 };
 $execute {
     auto* mod = Mod::get();
+    lsf::diagnostics::enabled = mod->getSettingValue<bool>("cpu-diagnostics");
+    lsf::diagnostics::reset();
+    listenForSettingChanges<bool>("cpu-diagnostics", [](bool value) {
+        lsf::diagnostics::enabled = value;
+        lsf::diagnostics::reset();
+    });
     s_renderRatio = lsf::renderRatio(mod->getSettingValue<int64_t>("render-percent"));
     s_smoothUpscale = mod->getSettingValue<bool>("smooth-upscale");
     s_fixPixelation = mod->getSettingValue<bool>("fix-pixelation");
@@ -89,7 +102,7 @@ $execute {
     listenForSettingChanges<bool>("fix-pixelation", [](bool value) {
         s_fixPixelation = value;
     });
-    log::info("LSF alpha.5 settings: render scale {}%, smooth upscale {}, pixelation fix {}. Changes apply on the next shader update.",
+    log::info("LSF alpha.6 settings: render scale {}%, smooth upscale {}, pixelation fix {}. Changes apply on the next shader update.",
         s_renderRatio * 100.f, s_smoothUpscale, s_fixPixelation);
-    log::info("LSF alpha.5: GD 2.2081 pixelation port; native shader and framebuffer setup retained.");
+    log::info("LSF alpha.6: GD 2.2081 pixelation port; native shader and framebuffer setup retained.");
 }

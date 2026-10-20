@@ -41,3 +41,10 @@ Live settings: during a shader-active level, change 100 -> 75 -> 50 -> 100,
 save/apply and resume. Confirm full-screen coverage and native sharpness at 100%.
 Toggle filtering and pixelation correction too. No reload or level restart needed.
 Paused rendering may retain the previous image until the next game update.
+
+## Heavy-level diagnostics
+Enable diagnostics, run the same heavy scene for 15-30 seconds at 100% then 75%,
+and collect the 'LSF CPU timings' lines and actual FPS separately.
+Disable diagnostics for final performance comparisons. CPU timings exclude GPU
+execution and are inclusive, so categories cannot be summed into a frame total.
+Compare trigger timing, collisions and object visibility with diagnostics off/on.

@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const source=fs.readFileSync(path.join(root,'src/main.cpp'),'utf8');
 const m=JSON.parse(fs.readFileSync(path.join(root,'mod.json'),'utf8'));
-assert.equal(m.version,'v0.1.0-alpha.5');
+assert.equal(m.version,'v0.1.0-alpha.6');
 assert.equal(m.geode,'5.11.2');
 assert.deepEqual(m.gd,{win:'2.2081',android:'2.2081'});
 assert(!m.resources);

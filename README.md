@@ -1,4 +1,4 @@
-# Level Shaders Fix — render scale alpha.5
+# Level Shaders Fix — render scale alpha.6
 Experimental GD 2.2081 / Geode 5.11.2 port for Windows x64, Android32 and Android64.
 Includes pixelation grid correction and configurable scene render scaling.
 Runtime visual/performance validation is pending; no measured FPS gain is claimed.
@@ -44,3 +44,15 @@ Compile success does not establish runtime compatibility or an FPS gain.
 Download the correct ABI from this repository's Actions run. Close GD and replace
 the old package under the same mod ID. Keep the original Level Shaders Fix disabled.
 Upstream attribution and pinned sources: THIRD_PARTY.md and PROVENANCE.json.
+
+## High-object CPU diagnostics (alpha.6)
+Enable CPU timing diagnostics in Geode settings; it applies live. Run a heavy level
+for at least 15 seconds. Geode logs report average/max CPU duration per call for
+gameplay updates, visibility, particle updates and shader calculations every five
+seconds, plus the level's total loaded object count. Counts are not visible object
+counts. Update timings are inclusive and categories may overlap; do not add them.
+No GPU query, collision skip, trigger skip, visibility throttling or object deletion
+is performed. Diagnostics have overhead; disable them for final FPS comparisons.
+This instrumentation is groundwork for targeted CPU optimization, not a completed
+high-object optimization or a measured FPS boost. An 8th-gen i5 does not identify the
+GPU, level bottleneck or achievable performance.

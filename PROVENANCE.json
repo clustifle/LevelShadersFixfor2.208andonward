@@ -20,13 +20,11 @@
     ]
   },
   "verification": {
-    "source_audit": "alpha.5 passed locally",
-    "cpp_compilation": "alpha.5 pending",
-    "cpp_math_tests": "alpha.5 pending",
-    "package_audit": "alpha.5 pending",
-    "runtime_windows": "alpha.5 live setting changes pending",
+    "source_audit": "alpha.6 pending",
+    "cpp_compilation": "alpha.6 pending",
+    "runtime_windows": "alpha.6 pending",
     "runtime_android32": "pending",
     "runtime_android64": "pending",
-    "performance": "No FPS measurements"
+    "performance": "No high-object benchmark or FPS measurement yet"
   }
 }

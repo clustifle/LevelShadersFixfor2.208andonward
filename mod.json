@@ -6,7 +6,7 @@
     },
     "id": "vuthinh.level-shaders-fix-port",
     "name": "Level Shaders Fix (Render Scale)",
-    "version": "v0.1.0-alpha.5",
+    "version": "v0.1.0-alpha.6",
     "developer": "Vu Thinh",
     "description": "Experimental scene render scaling and pixelation correction for GD 2.2081.",
     "tags": [
@@ -43,6 +43,12 @@
             "name": "Correct pixelation grid",
             "description": "Fit whole pixelation cells and align the snap grid. Level pixelation takes priority over scene render scaling. Applies after saving, on the next shader update.",
             "default": true
+        },
+        "cpu-diagnostics": {
+            "type": "bool",
+            "name": "CPU timing diagnostics",
+            "description": "Log gameplay update, visibility, particle and shader-calculation CPU timings every five seconds. Helps investigate heavy levels. Adds measurement overhead while enabled; does not measure GPU time or directly boost FPS.",
+            "default": false
         }
     }
 }
