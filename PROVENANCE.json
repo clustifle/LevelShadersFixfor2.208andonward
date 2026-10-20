@@ -1,0 +1,31 @@
+{
+  "reviewed_at": "2026-10-20",
+  "upstream": {
+    "repository": "https://github.com/cgytrus/LevelShadersFix",
+    "commit": "c481320e0e3e6e6d21e107365d228eb90cc6d92a",
+    "version": "v1.0.3"
+  },
+  "sdk": {
+    "repository": "https://github.com/geode-sdk/geode",
+    "tag": "v5.11.2",
+    "commit": "3909856e8714b503945d5cea12ba1bddf5d5b1b0"
+  },
+  "bindings": {
+    "repository": "https://github.com/geode-sdk/bindings",
+    "commit": "587989d2b95d8f0e943e73b5a8fee352ab2ac3c4",
+    "profiles": [
+      "2.2081",
+      "2.209",
+      "2.2091"
+    ]
+  },
+  "verification": {
+    "source_audit": "alpha.2 checks require absence of all custom render hooks",
+    "cpp_compilation": "alpha.2 passed Windows x64, Android32 and Android64 in original repository run 39374450261",
+    "runtime_windows": "alpha.1 failed user runtime test: cropped rendering and large FPS drop. Alpha.2 recovery retest pending.",
+    "runtime_android32": "alpha.1 runtime not verified; alpha.2 recovery retest pending",
+    "runtime_android64": "alpha.1 runtime not verified; alpha.2 recovery retest pending",
+    "cpp_math_tests": "passed in GitHub Actions",
+    "package_audit": "Historical alpha.1 package audit passed but runtime failed. Alpha.2 fork package audit pending."
+  }
+}

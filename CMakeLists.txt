@@ -1,22 +1,42 @@
-cmake_minimum_required(VERSION 3.21)
-set(CMAKE_CXX_STANDARD 20)
+cmake_minimum_required(VERSION 3.25)
+project(LevelShadersFixPort VERSION 0.1.0 LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(LevelShadersFix VERSION 1.0.3)
-
-add_library(${PROJECT_NAME} SHARED
-    src/main.cpp
-    # Add any extra C++ source files here
-)
-
-if (NOT DEFINED ENV{GEODE_SDK})
-    message(FATAL_ERROR "Unable to find Geode SDK! Please define GEODE_SDK environment variable to point to Geode")
-else()
-    message(STATUS "Found Geode: $ENV{GEODE_SDK}")
+set(LSF_TARGET_GD "2.2081" CACHE STRING "Reviewed GD profile")
+set_property(CACHE LSF_TARGET_GD PROPERTY STRINGS "2.2081" "2.209" "2.2091")
+if(NOT LSF_TARGET_GD MATCHES "^2\\.(2081|209|2091)$")
+    message(FATAL_ERROR "Only GD 2.2081, 2.209 and 2.2091 have source profiles. Review bindings before adding versions.")
 endif()
-
-add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
-
+option(LSF_ACKNOWLEDGE_EXPERIMENTAL "Acknowledge that this port has not passed runtime testing" OFF)
+if(NOT LSF_ACKNOWLEDGE_EXPERIMENTAL)
+    message(FATAL_ERROR "Experimental port: read README.md, then configure with -DLSF_ACKNOWLEDGE_EXPERIMENTAL=ON.")
+endif()
+if(NOT DEFINED ENV{GEODE_SDK} OR NOT EXISTS "$ENV{GEODE_SDK}/CMakeLists.txt")
+    message(FATAL_ERROR "Install the Geode 5.11.2 SDK and set GEODE_SDK to its directory.")
+endif()
+if(NOT LSF_TARGET_GD STREQUAL "2.2081" AND
+   NOT EXISTS "$ENV{GEODE_SDK}/loader/include/Geode/cocos/robtop/touch_dispatcher/CCTouchClipper.h")
+    message(FATAL_ERROR "GD 2.209/2.2091 bindings require newer Cocos interfaces absent from SDK 5.11.2. Use the 2.2081 profile until a compatible SDK/loader is available.")
+endif()
+# This selects generated layouts and addresses, not just mod metadata.
+set(GEODE_GD_VERSION "${LSF_TARGET_GD}" CACHE INTERNAL "Geode GD Version" FORCE)
+# SDK 5.11.2 initializes both version values inside the same default-only block.
+# An explicit GD profile must supply the integer used by SDK/binding #if guards.
+if(LSF_TARGET_GD STREQUAL "2.2081")
+    set(LSF_COMPARABLE_GD 22081)
+elseif(LSF_TARGET_GD STREQUAL "2.209")
+    set(LSF_COMPARABLE_GD 22090)
+else()
+    set(LSF_COMPARABLE_GD 22091)
+endif()
+set(GEODE_COMP_GD_VERSION "${LSF_COMPARABLE_GD}" CACHE INTERNAL "Geode Comparable GD Version" FORCE)
+set(GEODE_DONT_INSTALL_MODS ON CACHE BOOL "Do not auto-install development builds" FORCE)
+add_library(${PROJECT_NAME} SHARED src/main.cpp)
+target_compile_definitions(${PROJECT_NAME} PRIVATE LSF_TARGET_GD="${LSF_TARGET_GD}")
+add_subdirectory("$ENV{GEODE_SDK}" "${CMAKE_CURRENT_BINARY_DIR}/geode")
+if(NOT GEODE_TARGET_PLATFORM MATCHES "^(Win64|Android32|Android64)$")
+    message(FATAL_ERROR "Port targets are Win64, Android32 and Android64.")
+endif()
 setup_geode_mod(${PROJECT_NAME})
